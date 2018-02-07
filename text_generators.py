@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # -*- coding: utf-8 -*-
 """
 Created on Wed Feb  7 12:58:21 2018
@@ -6,9 +6,9 @@ Created on Wed Feb  7 12:58:21 2018
 @author: Daniel Maher
 """
 
-from ngram_sentence import *
+import ngram_sentence as ns
 
-def stuctured_text_generator(num_words, seed_word, bigram_words, sentence_structures):
+def structured_text_generator(num_words, seed_word, bigram_words, sentence_structures):
     """
     Generates text of length <num_words>, with <seed_word> as the first word
     of the text. Text generator consults <sentence_structures> and <bigram_words>
@@ -20,7 +20,7 @@ def stuctured_text_generator(num_words, seed_word, bigram_words, sentence_struct
         seed_word : a string representing the first wor
     """
     keys = bigram_words.keys()
-    if len(keys[0]) != 1:
+    if len(keys) != 1:
         print ("ERROR - bigram_words key size must be equal to 1")
         return
     if num_words not in sentence_structures:
@@ -28,21 +28,15 @@ def stuctured_text_generator(num_words, seed_word, bigram_words, sentence_struct
                sentence_structures.")
         return
     initial_key = tuple([seed_word])
+    
     if initial_key not in bigram_words:
         print ("ERROR - seed_word is not a key in bigram_words")
         return
     
-    
+
     return
 
-=======
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb  7 12:58:54 2018
+word_table, grammar_table = ns.from_path_to_ngram_tables("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url', 2)
+sentence_structures = ns.from_path_to_sentence_structures("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url')
 
-@author: cmshadow
-"""
-
-import ngram_sentence as ns
->>>>>>> 23807dc4100d289cf6f07253816933b57fcf3dc0
+structured_text_generator(8, "Sherlock", word_table, sentence_structures)

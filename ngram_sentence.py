@@ -125,8 +125,11 @@ def build_ngram_tables(tokens, n_grams=2):
     return word_table, grammar_table
 
 
-def from_path_to_ngram_tables(path, n_grams):
-    tokens = strip_html_tokenize_and_postag(path)
+def from_path_to_ngram_tables(path, url_or_local, n_grams):
+    if url_or_local == 'url':
+        tokens = strip_html_tokenize_and_postag(path)
+    if url_or_local == 'local':
+        tokens = open_file_tokenize_and_postag(path)
     word_table, grammar_table = build_ngram_tables(tokens, n_grams)
     return word_table, grammar_table
 
@@ -265,8 +268,11 @@ def generate_sentence_structures(list_of_sentences, unique_tokens_and_tags):
 """
 Generate sentence structures in one procedure
 """
-def from_path_to_sentence_structures(path):
-    rawtext = generate_local_rawtext(path)
+def from_path_to_sentence_structures(path, url_or_local):
+    if url_or_local == 'url':
+        rawtext = generate_html_rawtext(path)
+    if url_or_local == 'local':
+        rawtext = generate_local_rawtext(path)
     tokens = tokenize(rawtext)
     all_sentences = generate_all_sentences(rawtext)
     unique_tokens_and_tags,unique_tags = unique_tagging(tokens)
