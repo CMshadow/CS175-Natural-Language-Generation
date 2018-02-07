@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Created on Wed Feb  7 12:58:21 2018
@@ -70,6 +69,7 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
 
 word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url', 2)
 sentence_structures = ns.from_path_to_sentence_structures("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url')
+
 
 s = structured_text_generator(5, "the", word_table, sentence_structures, word_pos_map, pos_word_map)
 print (s)
