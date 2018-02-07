@@ -124,11 +124,11 @@ def build_ngram_tables(tokens, n_grams=2):
     
     return word_table, grammar_table
 
-word_ngrams, grammar_ngrams = build_ngram_tables(pos_tokens)
 
-
-
-
+def from_path_to_ngram_tables(path, n_grams):
+    tokens = strip_html_tokenize_and_postag(path)
+    word_table, grammar_table = build_ngram_tables(tokens, n_grams)
+    return word_table, grammar_table
 
 
 """
@@ -259,4 +259,16 @@ def generate_sentence_structures(list_of_sentences, unique_tokens_and_tags):
         else:
             sentence_structures[len(sentence)] = list()
             sentence_structures[len(sentence)].append(sentence)
+    return sentence_structures
+
+
+"""
+Generate sentence structures in one procedure
+"""
+def from_path_to_sentence_structures(path):
+    rawtext = generate_local_rawtext(path)
+    tokens = tokenize(rawtext)
+    all_sentences = generate_all_sentences(rawtext)
+    unique_tokens_and_tags,unique_tags = unique_tagging(tokens)
+    sentence_structures = generate_sentence_structures(all_sentences, unique_tokens_and_tags)
     return sentence_structures
