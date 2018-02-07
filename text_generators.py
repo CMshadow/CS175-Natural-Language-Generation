@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 """
 Created on Wed Feb  7 12:58:21 2018
@@ -34,3 +35,14 @@ def stuctured_text_generator(num_words, seed_word, bigram_words, sentence_struct
     
     return
 
+=======
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Feb  7 12:58:54 2018
+
+@author: cmshadow
+"""
+
+import ngram_sentence as ns
+>>>>>>> 23807dc4100d289cf6f07253816933b57fcf3dc0
