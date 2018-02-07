@@ -6,8 +6,9 @@ Created on Wed Feb  7 12:58:21 2018
 """
 
 import ngram_sentence as ns
+import random
 
-def structured_text_generator(num_words, seed_word, bigram_words, sentence_structures, word_pos_map):
+def structured_text_generator(num_words, seed_word, bigram_words, sentence_structures, word_pos_map, pos_word_map):
     """
     Generates text of length <num_words>, with <seed_word> as the first word
     of the text. Text generator consults <sentence_structures> and <bigram_words>
@@ -33,11 +34,42 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
         print ("ERROR - seed_word is not a key in bigram_words")
         return
     
+    seed_pos = random.sample(word_pos_map[seed_word], 1)
+    matching_structures = []
+    for structure in sentence_structures[num_words]:
+        if structure[0] == seed_pos[0]:
+            matching_structures.append(structure)
     
+    target_structure = random.sample(matching_structures, 1)
+    
+    s = ""
+    s += seed_word
+    previous_word = seed_word
+    
+    print (target_structure)
+    
+    for i, pos in enumerate(target_structure[0]):
+        if i != 0:
+            prev = tuple([previous_word])
+            if pos not in pos_word_map.keys() or pos == '.':
+                s += pos
+                previous_word = pos
+                continue
+            elligible_words = bigram_words[prev][pos]
+            if len(elligible_words) == 0:
+                substitute = random.sample(pos_word_map[pos], 1)[0]
+                previous_word = substitute
+                s += " " + substitute
+            else:
+                previous_word = random.sample(elligible_words, 1)[0]
+                s += " " + previous_word
+                
+    
+    return s
 
-    return
-
-word_table, grammar_table, word_pos_map = ns.from_path_to_ngram_tables("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url', 2)
+word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url', 2)
 sentence_structures = ns.from_path_to_sentence_structures("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url')
 
-structured_text_generator(8, "Sherlock", word_table, sentence_structures, word_pos_map)
+
+s = structured_text_generator(5, "the", word_table, sentence_structures, word_pos_map, pos_word_map)
+print (s)
