@@ -260,3 +260,14 @@ def generate_sentence_structures(list_of_sentences, unique_tokens_and_tags):
             sentence_structures[len(sentence)] = list()
             sentence_structures[len(sentence)].append(sentence)
     return sentence_structures
+
+"""
+Generate sentence structures in one procedure
+"""
+def from_path_to_sentence_structures(path):
+    rawtext = generate_local_rawtext(path)
+    tokens = tokenize(rawtext)
+    all_sentences = generate_all_sentences(rawtext)
+    unique_tokens_and_tags,unique_tags = unique_tagging(tokens)
+    sentence_structures = generate_sentence_structures(all_sentences, unique_tokens_and_tags)
+    return sentence_structures
