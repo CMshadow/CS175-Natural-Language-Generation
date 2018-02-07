@@ -64,6 +64,8 @@ def build_ngram_tables(tokens, n_grams=2):
     
     word_table = {}
     grammar_table = {}
+    word_pos_map = {}
+    
     value_base = {}
     
     # initialize parts-of-speech keys for table
@@ -109,9 +111,12 @@ def build_ngram_tables(tokens, n_grams=2):
             word_table[word_key] = pos_keys
         if grammar_key not in grammar_table:
             grammar_table[grammar_key] = defaultdict(float)
+        if tokens[i][0] not in word_pos_map:
+            word_pos_map[tokens[i][0]] = set()
             
         word_table[word_key][next_word[1]].append(next_word[0])
         grammar_table[grammar_key][next_word[1]] += 1.0
+        word_pos_map[tokens[i][0]].add(tokens[i][1])
         
         i += 1
     
@@ -122,7 +127,10 @@ def build_ngram_tables(tokens, n_grams=2):
         for key in grammar_table[pos]:
             grammar_table[pos][key] /= total
     
-    return word_table, grammar_table
+    for word in word_pos_map:
+        print (word, word_pos_map[word])
+    
+    return word_table, grammar_table, word_pos_map
 
 
 def from_path_to_ngram_tables(path, url_or_local, n_grams):
@@ -130,8 +138,8 @@ def from_path_to_ngram_tables(path, url_or_local, n_grams):
         tokens = strip_html_tokenize_and_postag(path)
     if url_or_local == 'local':
         tokens = open_file_tokenize_and_postag(path)
-    word_table, grammar_table = build_ngram_tables(tokens, n_grams)
-    return word_table, grammar_table
+    word_table, grammar_table, word_pos_map = build_ngram_tables(tokens, n_grams)
+    return word_table, grammar_table, word_pos_map
 
 
 """
