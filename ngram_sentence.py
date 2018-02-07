@@ -65,6 +65,7 @@ def build_ngram_tables(tokens, n_grams=2):
     word_table = {}
     grammar_table = {}
     word_pos_map = {}
+    pos_word_map = {}
     
     value_base = {}
     
@@ -113,10 +114,13 @@ def build_ngram_tables(tokens, n_grams=2):
             grammar_table[grammar_key] = defaultdict(float)
         if tokens[i][0] not in word_pos_map:
             word_pos_map[tokens[i][0]] = set()
+        if tokens[i][1] not in pos_word_map:
+            pos_word_map[tokens[i][1]] = set()
             
         word_table[word_key][next_word[1]].append(next_word[0])
         grammar_table[grammar_key][next_word[1]] += 1.0
         word_pos_map[tokens[i][0]].add(tokens[i][1])
+        pos_word_map[tokens[i][1]].add(tokens[i][0])
         
         i += 1
     
@@ -127,10 +131,7 @@ def build_ngram_tables(tokens, n_grams=2):
         for key in grammar_table[pos]:
             grammar_table[pos][key] /= total
     
-    for word in word_pos_map:
-        print (word, word_pos_map[word])
-    
-    return word_table, grammar_table, word_pos_map
+    return word_table, grammar_table, word_pos_map, pos_word_map
 
 
 def from_path_to_ngram_tables(path, url_or_local, n_grams):
@@ -138,8 +139,8 @@ def from_path_to_ngram_tables(path, url_or_local, n_grams):
         tokens = strip_html_tokenize_and_postag(path)
     if url_or_local == 'local':
         tokens = open_file_tokenize_and_postag(path)
-    word_table, grammar_table, word_pos_map = build_ngram_tables(tokens, n_grams)
-    return word_table, grammar_table, word_pos_map
+    word_table, grammar_table, word_pos_map, pos_word_map = build_ngram_tables(tokens, n_grams)
+    return word_table, grammar_table, word_pos_map, pos_word_map
 
 
 """
@@ -261,7 +262,10 @@ def generate_sentence_structures(list_of_sentences, unique_tokens_and_tags):
         for index, word in enumerate(sentence):
             for x in unique_tokens_and_tags:
                 if x[0] == word:
-                    sentence[index] = x[1]
+                    if x[1] != ".":    
+                        sentence[index] = x[1]
+                    else:
+                        sentence[index] = word    
                     break
     
     for sentence in list_of_sentences:
