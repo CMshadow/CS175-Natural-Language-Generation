@@ -115,13 +115,23 @@ def unique_tagging(tokens):
 Generate sentence structures
 """
 def generate_sentence_structures(list_of_sentences, unique_tokens_and_tags):
+    
+    sentence_structures = {}
+    
     for sentence in list_of_sentences:
         for index, word in enumerate(sentence):
             for x in unique_tokens_and_tags:
                 if x[0] == word:
                     sentence[index] = x[1]
                     break
-    return list_of_sentences
+    
+    for sentence in list_of_sentences:
+        if len(sentence) in sentence_structures:
+            sentence_structures[len(sentence)].append(sentence)
+        else:
+            sentence_structures[len(sentence)] = list()
+            sentence_structures[len(sentence)].append(sentence)
+    return sentence_structures
                 
                 
                 
@@ -138,9 +148,9 @@ all_sentences = generate_all_sentences(rawtext)
 
 unique_tokens_and_tags,unique_tags = unique_tagging(tokens)
 
-all_sentences = generate_sentence_structures(all_sentences, unique_tokens_and_tags)
+sentence_structures = generate_sentence_structures(all_sentences, unique_tokens_and_tags)
 
-print(all_sentences)
+print(sentence_structures)
             
             
     
