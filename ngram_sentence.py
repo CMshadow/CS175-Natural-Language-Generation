@@ -23,7 +23,7 @@ def strip_html_tokenize_and_postag(url):
     raw text into a list of part-of-speech tagged tokens in order of occurrence
     --------------------------------------------------------------------
     Inputs:
-        url <string> : the url address of the webpage to be stripped of html tags
+        url list of <string> : the url address of the webpage to be stripped of html tags
     Outputs:
         tokens <list of strings> : tokens of the raw text data contained at the url
     """    
@@ -35,11 +35,17 @@ def strip_html_tokenize_and_postag(url):
     tokens = nltk.pos_tag(word_tokenize(rawtext), 'universal')
     return tokens
 
-def open_file_tokenize_and_postag(filename):
-    file = open(filename)
-    rawtext = file.read()
-    tokens = nltk.pos_tag(word_tokenize(rawtext), 'universal')
-    return tokens
+def open_file_tokenize_and_postag(filenames):
+    """
+    takes list of file names
+    """
+    all_tokens = []
+    for filename in filenames:
+        with codecs.open(filename, 'r', 'utf8') as myfile:
+            rawtext = myfile.read()
+            tokens = nltk.pos_tag(word_tokenize(rawtext), 'universal')
+            all_tokens += tokens
+    return all_tokens
 
 def build_ngram_tables(tokens, n_grams=2):
     """
@@ -59,8 +65,15 @@ def build_ngram_tables(tokens, n_grams=2):
     """
     
     # get pos tags from tokens
-    tags = nltk.FreqDist([tup[1] for tup in tokens])
-    tags = [tup for tup in tags]
+    real_punctuation = []
+    for token in tokens:
+        if token[1] != ".":
+            real_punctuation.append(token)
+        else:
+            real_punctuation.append((token[0], token[0]))
+    tokens = real_punctuation
+    
+    tags = nltk.FreqDist([t[1] for t in tokens])
     
     word_table = {}
     grammar_table = {}
@@ -134,11 +147,11 @@ def build_ngram_tables(tokens, n_grams=2):
     return word_table, grammar_table, word_pos_map, pos_word_map
 
 
-def from_path_to_ngram_tables(path, url_or_local, n_grams):
+def from_path_to_ngram_tables(paths, url_or_local, n_grams):
     if url_or_local == 'url':
-        tokens = strip_html_tokenize_and_postag(path)
+        tokens = strip_html_tokenize_and_postag(paths)
     if url_or_local == 'local':
-        tokens = open_file_tokenize_and_postag(path)
+        tokens = open_file_tokenize_and_postag(paths)
     word_table, grammar_table, word_pos_map, pos_word_map = build_ngram_tables(tokens, n_grams)
     return word_table, grammar_table, word_pos_map, pos_word_map
 
@@ -156,9 +169,12 @@ def from_path_to_ngram_tables(path, url_or_local, n_grams):
 """
 Get raw text from a HTML
 """
-def generate_html_rawtext(url):
-    html = request.urlopen(url).read().decode('utf8')
-    rawtext = BeautifulSoup(html, "lxml").get_text()
+def generate_html_rawtext(urls):
+    all_rawtext = ""
+    for url in urls:
+        html = request.urlopen(url).read().decode('utf8')
+        rawtext = BeautifulSoup(html, "lxml").get_text()
+        all_rawtext += "\n" + rawtext
     return rawtext
 
 
@@ -166,10 +182,13 @@ def generate_html_rawtext(url):
 """
 Get raw text from a local text file
 """
-def generate_local_rawtext(path):
-    with codecs.open(path, 'r', 'utf8') as myfile:
-        rawtext=myfile.read()
-    return rawtext
+def generate_local_rawtext(paths):
+    all_rawtext = ""
+    for path in paths:
+        with codecs.open(path, 'r', 'utf8') as myfile:
+            rawtext=myfile.read()
+            all_rawtext += "\n" + rawtext
+    return all_rawtext
 
 
 
@@ -290,11 +309,11 @@ def generate_sentence_structures(list_of_sentences, unique_tokens_and_tags):
 """
 Generate sentence structures in one procedure
 """
-def from_path_to_sentence_structures(path, url_or_local):
+def from_path_to_sentence_structures(paths, url_or_local):
     if url_or_local == 'url':
-        rawtext = generate_html_rawtext(path)
+        rawtext = generate_html_rawtext(paths)
     if url_or_local == 'local':
-        rawtext = generate_local_rawtext(path)
+        rawtext = generate_local_rawtext(paths)
     tokens = tokenize(rawtext)
     all_sentences = generate_all_sentences(rawtext)
     unique_tokens_and_tags,unique_tags = unique_tagging(tokens)

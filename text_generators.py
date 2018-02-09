@@ -34,12 +34,16 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
         print ("ERROR - seed_word is not a key in bigram_words")
         return
     
-    seed_pos = random.sample(word_pos_map[seed_word], 1)
+    
+    
     matching_structures = []
+    seed_pos = random.sample(word_pos_map[seed_word], 1)
     for structure in sentence_structures[num_words]:
         if structure[0] == seed_pos[0]:
             matching_structures.append(structure)
-    
+    if len(matching_structures) == 0:
+        print ("ERROR - no sentences of length", num_words,"begins with",seed_pos)
+        return
     target_structure = random.sample(matching_structures, 1)
     
     s = ""
@@ -67,9 +71,16 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     
     return s
 
-word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url', 2)
-sentence_structures = ns.from_path_to_sentence_structures("http://www.gutenberg.org/cache/epub/1661/pg1661.txt", 'url')
+word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["alice.txt", "sherlock.txt", "cities.txt", "frankenstein.txt"], 'local', 2)
+sentence_structures = ns.from_path_to_sentence_structures(["C:\Users\Daniel Maher\Documents\GitHub\CS175-Natural-Language-Generation\alice.txt"], 'local')
 
-
-s = structured_text_generator(5, "the", word_table, sentence_structures, word_pos_map, pos_word_map)
-print (s)
+seed = ""
+num_words = 5
+while True:
+    seed = input("Enter seed word: ")
+    num_words = int(input("Enter number of words: "))
+    print ("\n")
+    if num_words == 0:
+        break
+    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
+    print (s)
