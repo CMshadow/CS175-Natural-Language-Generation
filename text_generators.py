@@ -55,7 +55,7 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     for i, pos in enumerate(target_structure[0]):
         if i != 0:
             prev = tuple([previous_word])
-            if pos not in pos_word_map.keys() or pos == '.':
+            if pos in pos_word_map.keys():
                 s += pos
                 previous_word = pos
                 continue
@@ -71,8 +71,8 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     
     return s
 
-word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["alice.txt", "sherlock.txt", "cities.txt", "frankenstein.txt"], 'local', 2)
-sentence_structures = ns.from_path_to_sentence_structures(["C:\Users\Daniel Maher\Documents\GitHub\CS175-Natural-Language-Generation\alice.txt"], 'local')
+word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["sherlock.txt", "cities.txt", "frankenstein.txt"], 'local', 2)
+sentence_structures = ns.from_path_to_sentence_structures(["sherlock.txt", "cities.txt", "frankenstein.txt"], 'local')
 
 seed = ""
 num_words = 5
