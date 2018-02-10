@@ -124,25 +124,18 @@ def build_ngram_tables(tokens, n_grams=2):
         if word_key not in word_table:
             word_table[word_key] = pos_keys
         if grammar_key not in grammar_table:
-            grammar_table[grammar_key] = defaultdict(float)
+            grammar_table[grammar_key] = []
         if tokens[i][0] not in word_pos_map:
             word_pos_map[tokens[i][0]] = set()
         if tokens[i][1] not in pos_word_map:
             pos_word_map[tokens[i][1]] = set()
             
         word_table[word_key][next_word[1]].append(next_word[0])
-        grammar_table[grammar_key][next_word[1]] += 1.0
+        grammar_table[grammar_key].append(next_word[1])
         word_pos_map[tokens[i][0]].add(tokens[i][1])
         pos_word_map[tokens[i][1]].add(tokens[i][0])
         
         i += 1
-    
-    for pos in grammar_table:
-        total = 0
-        for key in grammar_table[pos]:
-            total += grammar_table[pos][key]
-        for key in grammar_table[pos]:
-            grammar_table[pos][key] /= total
     
     return word_table, grammar_table, word_pos_map, pos_word_map
 
