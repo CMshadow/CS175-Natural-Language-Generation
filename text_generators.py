@@ -107,8 +107,8 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
     print (s)
     return s
 
-word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["sherlock.txt", "cities.txt", "frankenstein.txt"], 'local', 2)
-sentence_structures = ns.from_path_to_sentence_structures(["sherlock.txt", "cities.txt", "frankenstein.txt"], 'local')
+word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 2)
+sentence_structures = ns.from_path_to_sentence_structures([], 'local')
 
 seed = ""
 num_words = 5
@@ -121,7 +121,7 @@ while True:
     s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
     print (s)
 
-#word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["sherlock.txt"], 'local', 3)
-#
-#for i in range(20):
-#    unstructured_text_generator(15, ["the", "day"], word_table, grammar_table, word_pos_map, pos_word_map)
+word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 3)
+
+for i in range(20):
+    unstructured_text_generator(15, ["Thank", "you"], word_table, grammar_table, word_pos_map, pos_word_map)

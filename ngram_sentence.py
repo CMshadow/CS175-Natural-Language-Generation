@@ -32,7 +32,7 @@ def strip_html_tokenize_and_postag(url):
     # parse the html for raw text using BeautifulSoup
     rawtext = BeautifulSoup(html, 'html.parser').get_text()
     tokens = word_tokenize(rawtext)
-    tokens = nltk.pos_tag(word_tokenize(rawtext), 'universal')
+    tokens = nltk.pos_tag(word_tokenize(rawtext))
     return tokens
 
 def open_file_tokenize_and_postag(filenames):
@@ -43,7 +43,7 @@ def open_file_tokenize_and_postag(filenames):
     for filename in filenames:
         with codecs.open(filename, 'r', 'utf8') as myfile:
             rawtext = myfile.read()
-            tokens = nltk.pos_tag(word_tokenize(rawtext), 'universal')
+            tokens = nltk.pos_tag(word_tokenize(rawtext))
             all_tokens += tokens
     return all_tokens
 
@@ -97,7 +97,6 @@ def build_ngram_tables(tokens, n_grams=2):
         grammar_key = []
         
         pos_keys = copy.deepcopy(value_base)
-        
         
         for j in range(key_size):
             word_key.append(tokens[i+j][0])
@@ -256,7 +255,7 @@ def tokenize(rawtext):
 Part-of-Speech Tagging for every word
 """
 def universal_tagging(tokens):
-    tokens_and_tags = nltk.pos_tag(tokens, tagset='universal')
+    tokens_and_tags = nltk.pos_tag(tokens)
     tags = list(tag[1] for tag in tokens_and_tags)
     return (tokens_and_tags, tags)
 
@@ -267,7 +266,7 @@ Part-of-Speech Tagging for unique word
 """
 def unique_tagging(tokens):
     unique_tokens = set(tokens)
-    tokens_and_tags = nltk.pos_tag(unique_tokens, tagset='universal')
+    tokens_and_tags = nltk.pos_tag(unique_tokens)
     tags = list(tag[1] for tag in tokens_and_tags)
     return (tokens_and_tags, tags)
 
