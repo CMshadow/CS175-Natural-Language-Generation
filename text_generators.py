@@ -22,19 +22,16 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     keys = bigram_words.keys()
     for key in keys:
         if len(key) != 1:
-            print ("ERROR - bigram_words key size must be equal to 1")
-        break
+            return "ERROR - bigram_words key size must be equal to 1"
+    
     if num_words not in sentence_structures:
-        print ("ERROR - num_words length does not match any key found in \
-               sentence_structures.")
-        return
+        return "ERROR - num_words length does not match any key found in \
+               sentence_structures."
+    
     initial_key = tuple([seed_word])
-    
     if initial_key not in bigram_words:
-        print ("ERROR - seed_word is not a key in bigram_words")
-        return
-    
-    
+        return "ERROR - seed_word is not a key in bigram_words"
+        
     
     matching_structures = []
     seed_pos = random.sample(word_pos_map[seed_word], 1)
@@ -42,20 +39,17 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
         if structure[0] == seed_pos[0]:
             matching_structures.append(structure)
     if len(matching_structures) == 0:
-        print ("ERROR - no sentences of length", num_words,"begins with",seed_pos)
-        return
+        return "ERROR - no sentences of length" + str(num_words) + "begins with" + seed_pos[0]
     target_structure = random.sample(matching_structures, 1)
     
     s = ""
     s += seed_word
     previous_word = seed_word
     
-    print (target_structure)
-    
     for i, pos in enumerate(target_structure[0]):
         if i != 0:
             prev = tuple([previous_word])
-            if pos in pos_word_map.keys():
+            if pos == "." or pos == "," or pos == "!" or pos == "``" or pos == "''" or pos == "?" or pos == ":" or pos == ";" or pos == "'":
                 s += pos
                 previous_word = pos
                 continue
@@ -67,7 +61,6 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
             else:
                 previous_word = random.sample(elligible_words, 1)[0]
                 s += " " + previous_word
-                
     
     return s
 
@@ -79,7 +72,8 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
         s += word + " "
     
     key = seed_key
-    for i in range(num_words):
+    
+    for i in range(num_words * 2):
         pos_key = []
         while (tuple(pos_key) not in grammar_table):
             pos_key = []
@@ -104,25 +98,33 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
             if i != 0:
                 next_key.append(word)
         next_key.append(next_word)
-        key = tuple(next_key)      
-    print (s)
-    return s
+        key = tuple(next_key)
+        if i >= num_words:
+            for k in word_table[key]:
+                print(k)
+            break
+        
+    
+    return s, key[1]
+
 
 word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 2)
-sentence_structures = ns.from_path_to_sentence_structures([], 'local')
+sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt"], 'local')
 
-seed = ""
-num_words = 5
-while True:
-    seed = input("Enter seed word: ")
-    num_words = int(input("Enter number of words: "))
-    print ("\n")
-    if num_words == 0:
-        break
-    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
-    print (s)
+#seed = ""
+#num_words = 5
+#while True:
+#    seed = input("Enter seed word: ")
+#    num_words = int(input("Enter number of words: "))
+#    print ("\n")
+#    if num_words == 0:
+#        break
+#    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
+#    print (s)
 
-word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 3)
+word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 3)
 
 for i in range(20):
-    unstructured_text_generator(15, ["Thank", "you"], word_table, grammar_table, word_pos_map, pos_word_map)
+    s, lastword = unstructured_text_generator(15, ["Thank", "you"], word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct)
+    print(s)
+    

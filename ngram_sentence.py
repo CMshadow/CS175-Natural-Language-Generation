@@ -65,13 +65,13 @@ def build_ngram_tables(tokens, n_grams=2):
     """
     
     # get pos tags from tokens
-    real_punctuation = []
-    for token in tokens:
-        if token[1] != ".":
-            real_punctuation.append(token)
-        else:
-            real_punctuation.append((token[0], token[0]))
-    tokens = real_punctuation
+#    real_punctuation = []
+#    for token in tokens:
+#        if token[1] != ".":
+#            real_punctuation.append(token)
+#        else:
+#            real_punctuation.append((token[0], token[0]))
+#    tokens = real_punctuation
     
     tags = nltk.FreqDist([t[1] for t in tokens])
     
