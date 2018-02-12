@@ -71,6 +71,43 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     
     return s
 
+
+def unstructured_text_generator(num_words, seed_words, word_table, grammar_table, word_pos_map, pos_word_map):
+    seed_key = tuple(seed_words)
+    s = ""
+    for word in seed_words:
+        s += word + " "
+    
+    key = seed_key
+    for i in range(num_words):
+        pos_key = []
+        while (tuple(pos_key) not in grammar_table):
+            pos_key = []
+            for j in range(len(key)):
+                pos_key.append(random.sample(word_pos_map[key[j]], 1)[0])
+            
+        pos_key = tuple(pos_key)
+        
+        next_pos = random.sample(grammar_table[pos_key], 1)[0]
+        if len(word_table[key][next_pos]) == 0:
+            elligible_pos = []
+            for pos in word_table[key]:
+                if len(word_table[key][pos]) != 0:
+                    elligible_pos.append(pos)
+            next_pos = random.sample(elligible_pos, 1)[0]
+            
+        next_word = random.sample(word_table[key][next_pos], 1)[0]
+        
+        s += next_word + " "
+        next_key = []
+        for i, word in enumerate(key):
+            if i != 0:
+                next_key.append(word)
+        next_key.append(next_word)
+        key = tuple(next_key)      
+    print (s)
+    return s
+
 word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["sherlock.txt", "cities.txt", "frankenstein.txt"], 'local', 2)
 sentence_structures = ns.from_path_to_sentence_structures(["sherlock.txt", "cities.txt", "frankenstein.txt"], 'local')
 
@@ -84,3 +121,8 @@ while True:
         break
     s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
     print (s)
+
+#word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["sherlock.txt"], 'local', 3)
+#
+#for i in range(20):
+#    unstructured_text_generator(15, ["the", "day"], word_table, grammar_table, word_pos_map, pos_word_map)
