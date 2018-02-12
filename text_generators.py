@@ -55,7 +55,7 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     for i, pos in enumerate(target_structure[0]):
         if i != 0:
             prev = tuple([previous_word])
-            if pos in word_pos_map:
+            if pos in pos_word_map.keys():
                 s += pos
                 previous_word = pos
                 continue
@@ -70,6 +70,7 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
                 
     
     return s
+
 
 def unstructured_text_generator(num_words, seed_words, word_table, grammar_table, word_pos_map, pos_word_map):
     seed_key = tuple(seed_words)
