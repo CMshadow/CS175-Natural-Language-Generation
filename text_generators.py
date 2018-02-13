@@ -132,15 +132,17 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
 #    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
 #    print (s)
 
-n_grams = 4
-word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', n_grams)
+n_grams = 3
+word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables(["obama_speeches.txt", "./CS175-Books/sherlock.txt"], 'local', n_grams)
 
-lengths = [3, 3, 4, 4, 5, 5, 6, 7]
+print ("hello")
+
+lengths = [ 4, 5, 6, 8 ]
 
 string = []
 
-initializer = ["Thank", "you", "."]
-for i in range(20):
+initializer = ["I", "got"]
+for i in range(10):
     if i == 0:
         include_seed = True
     else:
