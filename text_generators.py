@@ -7,6 +7,7 @@ Created on Wed Feb  7 12:58:21 2018
 
 import ngram_sentence as ns
 import random
+import nltk
 
 def structured_text_generator(num_words, seed_word, bigram_words, sentence_structures, word_pos_map, pos_word_map):
     """
@@ -65,15 +66,18 @@ def structured_text_generator(num_words, seed_word, bigram_words, sentence_struc
     return s
 
 
-def unstructured_text_generator(num_words, seed_words, word_table, grammar_table, word_pos_map, pos_word_map):
+def unstructured_text_generator(num_words, seed_words, word_table, grammar_table, word_pos_map, pos_word_map, seed_in=True):
     seed_key = tuple(seed_words)
-    s = ""
-    for word in seed_words:
-        s += word + " "
+    s = []
+    if seed_in:
+        for word in seed_words:
+            s.append(word)
     
     key = seed_key
     
-    for i in range(num_words * 2):
+    num_tolerance = num_words * 2
+    i = 0
+    while (True):
         pos_key = []
         while (tuple(pos_key) not in grammar_table):
             pos_key = []
@@ -92,24 +96,30 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
             
         next_word = random.sample(word_table[key][next_pos], 1)[0]
         
-        s += next_word + " "
+        s.append(next_word)
         next_key = []
-        for i, word in enumerate(key):
-            if i != 0:
+        for j, word in enumerate(key):
+            if j != 0:
                 next_key.append(word)
         next_key.append(next_word)
         key = tuple(next_key)
-        if i >= num_words:
-            for k in word_table[key]:
-                print(k)
-            break
         
-    
-    return s, key[1]
+        if i > num_words:
+            if key[-1] == "." or key[-1] == ";" or key[-1] == "?" or key[-1] == "!" or key[-1] == ":":
+                return s
+            for pos in word_table[key]:
+                if (pos == "." or pos == ";" or pos == ":" or pos == "?" or pos == "!") and len(word_table[key][pos]) != 0:
+                    s.append(random.sample(word_table[key][pos], 1)[0])
+                    return s
+        if i == 40:
+            break
+        i += 1
+        
+    return s
 
 
-word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 2)
-sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt"], 'local')
+#word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 2)
+#sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt"], 'local')
 
 #seed = ""
 #num_words = 5
@@ -122,9 +132,28 @@ sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt"]
 #    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
 #    print (s)
 
-word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', 3)
+n_grams = 4
+word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables(["obama_speeches.txt"], 'local', n_grams)
 
+lengths = [3, 3, 4, 4, 5, 5, 6, 7]
+
+string = []
+
+initializer = ["Thank", "you", "."]
 for i in range(20):
-    s, lastword = unstructured_text_generator(15, ["Thank", "you"], word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct)
-    print(s)
-    
+    if i == 0:
+        include_seed = True
+    else:
+        include_seed = False
+    num_words = random.sample(lengths,1)[0]
+    s = unstructured_text_generator(num_words, initializer, word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct, include_seed)
+    string += s
+    initializer = s[-(n_grams-1):]
+
+s = ""
+for w in string:
+    if w == "n't" or w == "'d" or w == "'ve" or w == "'s" or w == "," or w == ";" or w == "."  or w == "!" or w == "?" or w == ":" or w == "'":
+        s += w
+    elif w != "''" and w != "``":
+        s += " " + w
+print (s)
