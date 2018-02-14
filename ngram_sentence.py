@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 import nltk, codecs
 from nltk import word_tokenize
 from urllib import request
+import re
 
 def strip_html_tokenize_and_postag(url):
     """
@@ -46,6 +47,23 @@ def open_file_tokenize_and_postag(filenames):
             tokens = nltk.pos_tag(word_tokenize(rawtext))
             all_tokens += tokens
     return all_tokens
+
+
+def generate_booksummary_tokens():
+    rawtext = ""
+    path = "./Book_Summaries/booksummaries.txt"
+    with codecs.open(path, 'r', 'utf8') as myfile:
+        i = 0
+        for line in myfile:
+            if i < 1000:
+                summary_text = line.split("\t")
+                rawtext += "\n" + summary_text[-1]
+            else:
+                break
+            i += 1
+    rawtext = re.sub("[()]", "", rawtext)
+    tokens = nltk.pos_tag(word_tokenize(rawtext))
+    return tokens
 
 def build_ngram_tables(tokens, n_grams=2):
     """
@@ -110,6 +128,7 @@ def build_ngram_tables(tokens, n_grams=2):
         if next_word[0] == "(":
             first_bracket_index = i + key_size
             left_bracket_count += 1
+            
             while left_bracket_count != right_bracket_count:
                 if tokens[i][0] == "(" and i != first_bracket_index:
                     left_bracket_count += 1
@@ -167,7 +186,7 @@ def generate_html_rawtext(urls):
         html = request.urlopen(url).read().decode('utf8')
         rawtext = BeautifulSoup(html, "lxml").get_text()
         all_rawtext += "\n" + rawtext
-    return rawtext
+    return all_rawtext
 
 
 
@@ -181,8 +200,8 @@ def generate_local_rawtext(paths):
             rawtext=myfile.read()
             all_rawtext += "\n" + rawtext
     return all_rawtext
-
-
+    
+    
 
 
 """

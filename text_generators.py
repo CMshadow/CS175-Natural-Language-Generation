@@ -131,25 +131,26 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
 #        break
 #    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
 #    print (s)
-
+summaries = ns.generate_booksummary_tokens()
 n_grams = 3
-word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables(["obama_speeches.txt", "./CS175-Books/sherlock.txt"], 'local', n_grams)
+word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.build_ngram_tables(summaries, n_grams)
+# word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables([summaries], 'local', n_grams)
 
 print ("hello")
 
-lengths = [ 4, 5, 6, 8 ]
+lengths = [ 4, 5, 6 ]
 
 string = []
 
-initializer = ["I", "got"]
-for i in range(10):
+initializer = ["Then", "he"]
+for i in range(30):
     if i == 0:
         include_seed = True
     else:
         include_seed = False
     num_words = random.sample(lengths,1)[0]
     s = unstructured_text_generator(num_words, initializer, word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct, include_seed)
-    string += s
+    string += ["\n"] + s
     initializer = s[-(n_grams-1):]
 
 s = ""
@@ -159,3 +160,4 @@ for w in string:
     elif w != "''" and w != "``":
         s += " " + w
 print (s)
+
