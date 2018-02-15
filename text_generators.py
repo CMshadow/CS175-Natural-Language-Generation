@@ -75,7 +75,6 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
     
     key = seed_key
     
-    num_tolerance = num_words * 2
     i = 0
     while (True):
         pos_key = []

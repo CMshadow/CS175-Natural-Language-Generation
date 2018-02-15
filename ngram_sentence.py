@@ -49,13 +49,13 @@ def open_file_tokenize_and_postag(filenames):
     return all_tokens
 
 
-def generate_booksummary_tokens():
+def generate_booksummary_tokens(total):
     rawtext = ""
     path = "./Book_Summaries/booksummaries.txt"
     with codecs.open(path, 'r', 'utf8') as myfile:
         i = 0
         for line in myfile:
-            if i < 1000:
+            if i < total:
                 summary_text = line.split("\t")
                 rawtext += "\n" + summary_text[-1]
             else:

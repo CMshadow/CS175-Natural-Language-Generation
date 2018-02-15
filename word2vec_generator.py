@@ -316,12 +316,11 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
         if len(key) != len(seed_words):
             return ["ERROR"]
     
-    seed_key = tuple(seed_words)
+    word_key = tuple(seed_words)
     s = []
+    
     for word in seed_words:
         s.append(word)
-    
-    key = seed_key
     
     NOUN_check = ""
     
@@ -330,61 +329,65 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
             NOUN_check = word
             
     ### start looking at next part of speech
-    i = 0
-    while (True):            
+    i=0
+    while(True):
         pos_key = []
         while (tuple(pos_key) not in grammar_table):
             pos_key = []
-            for j in range(len(key)):
-                pos_key.append(random.sample(word_pos_map[key[j]], 1)[0])
-
-                 
+            for j in range(len(word_key)):
+                pos_key.append(random.sample(word_pos_map[word_key[j]], 1)[0])
+            
         pos_key = tuple(pos_key)
-        
-        for j,pos in enumerate(pos_key):
-            if pos == "NN" or pos == "NNS":
-                NOUN_check = key[j]
-        print (NOUN_check)
-        
-        
         next_pos = random.sample(grammar_table[pos_key], 1)[0]
-        if len(word_table[key][next_pos]) == 0:
-            elligible_pos = []
-            for pos in word_table[key]:
-                if len(word_table[key][pos]) != 0:
-                    elligible_pos.append(pos)
-            next_pos = random.sample(elligible_pos, 1)[0]
         
         next_word = ""
         
-        if NOUN_check != "" and (next_pos == "NN" or next_pos == "NNS"):
-            similar_words = word_vectors.most_similar(positive=[NOUN_check], topn=50)
-            #random.shuffle(similar_words)
-            print ("  entered loop")
-            temp = []
-            for word in similar_words:
-                temp.append(nltk.pos_tag([word[0]])[0])
+        if next_pos == 'NN' or next_pos == 'NNS':
+            if NOUN_check != "":
+                similar_words = word_vectors.most_similar(positive=[NOUN_check], topn=50)
+                similar_pure_words = [w[0] for w in similar_words]
+                random.shuffle(similar_pure_words)
                 
-            for w in temp:
-                if w[1] == next_pos:
-                    next_word = w[0]
-                    NOUN_check = w[0]
-                    s.append(next_word)
-                    print ("\t", w[0])
-                    break
-            if next_word == "":
-                next_word = random.sample(word_table[key][next_pos], 1)[0]
+                for x in similar_pure_words:
+                    if x in pos_word_map[next_pos]:
+                        print('\t similarity generated')
+                        print('\t', x)
+                        print()
+                        next_word = x
+                        NOUN_check = x
+                        break;
+            if NOUN_check == "" or next_word == "":                
+                if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
+                    print('\t word table random generated')
+                    next_word = random.sample(word_table[word_key][next_pos], 1)[0]
+                    NOUN_check = next_word
+                else:
+                    print('\t pos word map random generated')
+                    next_word = random.sample(pos_word_map[next_pos], 1)[0]
+                    NOUN_check = next_word
+
+
+            s.append(next_word)
         else:
-            next_word = random.sample(word_table[key][next_pos], 1)[0]
+
+            if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
+                print('\t word table random generated')
+                next_word = random.sample(word_table[word_key][next_pos], 1)[0]
+            else:
+                print('\t pos word map random generated')
+                next_word = random.sample(pos_word_map[next_pos], 1)[0]
+            s.append(next_word)
             
-        s.append(next_word)
         next_key = []
-        for j, word in enumerate(key):
+        for j, word in enumerate(word_key):
             if j != 0:
                 next_key.append(word)
         next_key.append(next_word)
-        key = tuple(next_key)
-        
+        word_key = tuple(next_key)
+                        
+                
+                
+                
         if i > num_words:
             if key[-1] == "." or key[-1] == ";" or key[-1] == "?" or key[-1] == "!" or key[-1] == ":":
                 return s
@@ -395,15 +398,14 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
         if i == 40:
             break
         i += 1
-            
-            
+        
     return s
     
     
 
 #glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 #
-#ngram_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt"], 'local', 2)
+word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables(["obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt"], 'local', 3)
 #sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt"], 'local')
 #
 #s = word2vec_generator(9, "I", ngram_table, sentence_structures, word_pos_map, pos_word_map, glove_file_path)
@@ -411,9 +413,9 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
 
 summaries = ns.generate_booksummary_tokens(300)
 n_grams = 3
-word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
-glove_file_path = "C:/Users/Daniel Maher/Desktop/glove.6B.50d.txt"
+#word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
+glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 
-initializer = ["When", "this"]
+initializer = ["Thank", "you"]
 s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
 print (s)
