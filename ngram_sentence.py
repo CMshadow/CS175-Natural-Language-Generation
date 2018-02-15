@@ -62,7 +62,7 @@ def generate_booksummary_tokens(total):
                 break
             i += 1
     rawtext = re.sub("[()]", "", rawtext)
-    tokens = word_tokenize(rawtext)
+    tokens = word_tokenize(nltk.pos_tag(rawtext))
     return tokens
 
 def build_ngram_tables(tokens, n_grams=2):
