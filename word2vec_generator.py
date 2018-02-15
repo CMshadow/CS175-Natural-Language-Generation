@@ -342,11 +342,6 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
         
         next_word = ""
         
-        print(word_key)
-        print(pos_key)
-        print(next_pos)
-        print()
-        
         if next_pos == 'NN' or next_pos == 'NNS':
             if NOUN_check != "":
                 similar_words = word_vectors.most_similar(positive=[NOUN_check], topn=50)
@@ -355,32 +350,31 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                 
                 for x in similar_pure_words:
                     if x in pos_word_map[next_pos]:
-                        print('\t\tsimilar generated')
+                        print('\t similarity generated')
+                        print('\t', x)
+                        print()
                         next_word = x
                         NOUN_check = x
                         break;
-            if NOUN_check == "" or next_word == "":
-                #print("\t",word_key)
-                #print("\t",next_pos)
-                #print("\t",word_table[word_key][next_pos])
-                #print("\t",random.sample(word_table[word_key][next_pos],1))
-                
+            if NOUN_check == "" or next_word == "":                
                 if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
+                    print('\t word table random generated')
                     next_word = random.sample(word_table[word_key][next_pos], 1)[0]
                     NOUN_check = next_word
                 else:
+                    print('\t pos word map random generated')
                     next_word = random.sample(pos_word_map[next_pos], 1)[0]
                     NOUN_check = next_word
 
+
             s.append(next_word)
         else:
-            print("\t",word_key)
-            print("\t",next_pos)
-            print("\t",word_key in word_table)
-            #print("\t",random.sample(word_table[word_key][next_pos],1))
+
             if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
+                print('\t word table random generated')
                 next_word = random.sample(word_table[word_key][next_pos], 1)[0]
             else:
+                print('\t pos word map random generated')
                 next_word = random.sample(pos_word_map[next_pos], 1)[0]
             s.append(next_word)
             
