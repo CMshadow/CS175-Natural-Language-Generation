@@ -323,10 +323,14 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
         s.append(word)
     
     NOUN_check = ""
+    VERB_check = ""
     
     for word in seed_words:
         if "NN" in word_pos_map[word] or "NNS" in word_pos_map[word]:
             NOUN_check = word
+    for word in seed_words:
+        if "VB" in word_pos_map[word] or "VBG" in word_pos_map[word] or "VBD" in word_pos_map[word] or "VBN" in word_pos_map[word] or "VBP" in word_pos_map[word] or "VBZ" in word_pos_map[word]:
+            VERB_check = word
             
     ### start looking at next part of speech
     i=0
@@ -350,7 +354,7 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                 
                 for x in similar_pure_words:
                     if x in pos_word_map[next_pos]:
-                        print('\t similarity generated')
+                        print('\t NN similarity generated')
                         print('\t', x)
                         print()
                         next_word = x
@@ -358,14 +362,38 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                         break;
             if NOUN_check == "" or next_word == "":                
                 if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
-                    print('\t word table random generated')
+                    print('\t NN word table random generated')
                     next_word = random.sample(word_table[word_key][next_pos], 1)[0]
                     NOUN_check = next_word
                 else:
-                    print('\t pos word map random generated')
+                    print('\t NN pos word map random generated')
                     next_word = random.sample(pos_word_map[next_pos], 1)[0]
                     NOUN_check = next_word
 
+            s.append(next_word)
+        elif next_pos == 'VB' or next_pos == 'VBD' or next_pos == 'VBG' or next_pos == 'VBN' or next_pos == 'VBP' or next_pos == 'VBZ':
+            if VERB_check != "":
+                similar_words = word_vectors.most_similar(positive=[VERB_check], topn=50)
+                similar_pure_words = [w[0] for w in similar_words]
+                random.shuffle(similar_pure_words)
+                
+                for x in similar_pure_words:
+                    if x in pos_word_map[next_pos]:
+                        print('\t VB similarity generated')
+                        print('\t', x)
+                        print()
+                        next_word = x
+                        VERB_check = x
+                        break;
+            if VERB_check == "" or next_word == "":                
+                if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
+                    print('\t VB word table random generated')
+                    next_word = random.sample(word_table[word_key][next_pos], 1)[0]
+                    VERB_check = next_word
+                else:
+                    print('\t VB pos word map random generated')
+                    next_word = random.sample(pos_word_map[next_pos], 1)[0]
+                    VERB_check = next_word
 
             s.append(next_word)
         else:
@@ -377,6 +405,7 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                 print('\t pos word map random generated')
                 next_word = random.sample(pos_word_map[next_pos], 1)[0]
             s.append(next_word)
+           
             
         next_key = []
         for j, word in enumerate(word_key):
