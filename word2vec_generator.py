@@ -440,11 +440,11 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
 #s = word2vec_generator(9, "I", ngram_table, sentence_structures, word_pos_map, pos_word_map, glove_file_path)
 #print(s)
 
-summaries = ns.generate_booksummary_tokens(10000)
+summaries = ns.generate_booksummary_tokens(300)
 n_grams = 3
 word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
-glove_file_path = "C:/Users/CMshadow/Desktop/glove.6B.50d.txt"
+glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 
-initializer = ["Thank", "you"]
+initializer = ["It", "is"]
 s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
 print (s)
