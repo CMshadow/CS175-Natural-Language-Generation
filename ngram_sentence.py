@@ -330,3 +330,19 @@ def from_path_to_sentence_structures(paths, url_or_local):
     unique_tokens_and_tags,unique_tags = unique_tagging(tokens)
     sentence_structures = generate_sentence_structures(all_sentences, unique_tokens_and_tags)
     return sentence_structures
+
+
+
+
+alltext = generate_local_rawtext(["./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt",
+                        "./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt",
+                        "./Speech/speech10.txt","./Speech/speech11.txt","./Speech/speech12.txt","./Speech/speech13.txt",
+                        "./Speech/speech14.txt","./Speech/speech15.txt","./Speech/speech16.txt","./Speech/speech17.txt",
+                        "./Speech/speech18.txt","obama_speeches.txt"])
+alltext2 = generate_local_rawtext(["./Books/cities.txt","./Books/emma.txt","./Books/frankenstein.txt","./Books/heart.txt",
+                        "./Books/jungle.txt","./Books/plato_republic.txt","./Books/pride.txt","./Books/robinson.txt",
+                        "./Books/sherlock.txt"])
+t = tokenize(alltext)
+r = unique_tagging(t)
+t2 = tokenize(alltext2)
+r2 = unique_tagging(t2)

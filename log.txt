@@ -1,0 +1,10 @@
+sentence structure + pos(not universal) + speeches training datasets
+
+[['PRP', 'VBD', 'RB', 'DT', 'JJS', 'NN', 'IN', 'DT', 'NN', '.']]
+I was there The likeliest candidate for the dream .
+
+[['PRP', 'VBD', 'PRP', 'IN', 'PRP', 'VBP', 'DT', 'JJ', 'IN', 'DT', 'VB', 'IN', 'NNS', 'RB', '.']]
+I said they because I listen an unyielding in this love in hearts desperately .
+
+[['PRP', 'VBD', 'RB', 'DT', 'JJS', 'JJ', 'IN', 'DT', 'NN', '.']]
+We welcomed legitimately That longest ethnic At a nation .
