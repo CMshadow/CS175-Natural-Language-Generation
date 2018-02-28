@@ -434,35 +434,32 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
 
 #glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 #
-word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables([
-        "obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt",
-        "./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt",
-        "./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt","./Speech/speech12.txt",
-        "./Speech/speech13.txt","./Speech/speech14.txt","./Speech/speech15.txt","./Speech/speech16.txt",
-        "./Speech/speech17.txt","./Speech/speech18.txt", "./Books/cities.txt","./Books/emma.txt",
-        "./Books/frankenstein.txt","./Books/heart.txt", "./Books/jungle.txt","./Books/plato_republic.txt",
-        "./Books/pride.txt","./Books/sherlock.txt", "./Books/robinson.txt"], 'local', 3)
+#word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables([
+#        "obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt",
+#        "./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt",
+#        "./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt","./Speech/speech12.txt",
+#        "./Speech/speech13.txt","./Speech/speech14.txt","./Speech/speech15.txt","./Speech/speech16.txt",
+#        "./Speech/speech17.txt","./Speech/speech18.txt"], 'local', 3)
 #sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt"], 'local')
 #
 #s = word2vec_generator(9, "I", ngram_table, sentence_structures, word_pos_map, pos_word_map, glove_file_path)
 #print(s)
 
 
-#summaries = ns.generate_booksummary_tokens(9999)
+summaries = ns.generate_booksummary_tokens(9999)
 
 n_grams = 3
-#word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
-glove_file_path = "C:/Users/CMshadow/Desktop/glove.6B.50d.txt"
+word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
+<<<<<<< HEAD
+glove_file_path = "C:/Users/Daniel Maher/Desktop/glove.6B.50d.txt"
+
+initializer = ["a", "sailor"]
+s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
+print (s)
+=======
+glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 
 initializer = ["It", "is"]
-<<<<<<< HEAD
-results = []
-for w in range(20):
-    s = word2vec_generator(20, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
-    results.append(s)
-for w in results:
-    print(w)
-=======
 #s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
 #print (s)
 

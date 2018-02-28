@@ -18,6 +18,25 @@ from nltk import word_tokenize
 from urllib import request
 import re
 
+
+def get_all_text_in_folder(folder_path):
+    """ 
+        Returns all rawtext in text files within the given folder
+        ---------------------------
+        Input: folder_path <string> - the path of the folder containing text files
+        Output: rawtext <string> - the raw text of all text files in folder
+    """
+    
+    import os
+    import glob
+    file_names = folder_path + "*.txt"
+    files = glob.glob(file_names)
+    rawtext = ""
+    for file in files:
+        with codecs.open(file, 'r', 'utf8') as f:
+            rawtext += f.read()
+    return rawtext
+
 def strip_html_tokenize_and_postag(url):
     """
     Strips html tags from the input webpage url, then tokenizes the remaining
@@ -49,7 +68,7 @@ def open_file_tokenize_and_postag(filenames):
     return all_tokens
 
 
-def generate_booksummary_tokens(total):
+def generate_booksummary_tokens(total=16600):
     rawtext = ""
     path = "./Book_Summaries/booksummaries.txt"
     with codecs.open(path, 'r', 'utf8') as myfile:
@@ -57,13 +76,16 @@ def generate_booksummary_tokens(total):
         for line in myfile:
             if i < total:
                 summary_text = line.split("\t")
-                rawtext += "\n" + summary_text[-1]
+                rawtext += summary_text[-1]
             else:
                 break
             i += 1
+    myfile.close()
+        
     rawtext = re.sub("[()]", "", rawtext)
     tokens = nltk.pos_tag(word_tokenize(rawtext))
-    return tokens
+    return tokens, rawtext
+
 
 def build_ngram_tables(tokens, n_grams=2):
     """
@@ -125,17 +147,17 @@ def build_ngram_tables(tokens, n_grams=2):
         # skip words in parenthesis
         left_bracket_count = 0
         right_bracket_count = 0
-        if next_word[0] == "(":
-            first_bracket_index = i + key_size
-            left_bracket_count += 1
-            
-            while left_bracket_count != right_bracket_count:
-                if tokens[i][0] == "(" and i != first_bracket_index:
-                    left_bracket_count += 1
-                if tokens[i][0] == ")":
-                    right_bracket_count += 1
-                i += 1
-            next_word = tokens[i]
+#        if next_word[0] == "(":
+#            first_bracket_index = i + key_size
+#            left_bracket_count += 1
+#            
+#            while left_bracket_count != right_bracket_count:
+#                if tokens[i][0] == "(" and i != first_bracket_index:
+#                    left_bracket_count += 1
+#                if tokens[i][0] == ")":
+#                    right_bracket_count += 1
+#                i += 1
+#            next_word = tokens[i]
         
         word_key = tuple(word_key)
         grammar_key = tuple(grammar_key)
@@ -334,15 +356,15 @@ def from_path_to_sentence_structures(paths, url_or_local):
 
 
 
-alltext = generate_local_rawtext(["./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt",
-                        "./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt",
-                        "./Speech/speech10.txt","./Speech/speech11.txt","./Speech/speech12.txt","./Speech/speech13.txt",
-                        "./Speech/speech14.txt","./Speech/speech15.txt","./Speech/speech16.txt","./Speech/speech17.txt",
-                        "./Speech/speech18.txt","obama_speeches.txt"])
-alltext2 = generate_local_rawtext(["./Books/cities.txt","./Books/emma.txt","./Books/frankenstein.txt","./Books/heart.txt",
-                        "./Books/jungle.txt","./Books/plato_republic.txt","./Books/pride.txt","./Books/robinson.txt",
-                        "./Books/sherlock.txt"])
-t = tokenize(alltext)
-r = unique_tagging(t)
-t2 = tokenize(alltext2)
-r2 = unique_tagging(t2)
+#alltext = generate_local_rawtext(["./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt",
+#                        "./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt",
+#                        "./Speech/speech10.txt","./Speech/speech11.txt","./Speech/speech12.txt","./Speech/speech13.txt",
+#                        "./Speech/speech14.txt","./Speech/speech15.txt","./Speech/speech16.txt","./Speech/speech17.txt",
+#                        "./Speech/speech18.txt","obama_speeches.txt"])
+#alltext2 = generate_local_rawtext(["./Books/cities.txt","./Books/emma.txt","./Books/frankenstein.txt","./Books/heart.txt",
+#                        "./Books/jungle.txt","./Books/plato_republic.txt","./Books/pride.txt","./Books/robinson.txt",
+#                        "./Books/sherlock.txt"])
+#t = tokenize(alltext)
+#r = unique_tagging(t)
+#t2 = tokenize(alltext2)
+#r2 = unique_tagging(t2)

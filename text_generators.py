@@ -130,28 +130,34 @@ def unstructured_text_generator(num_words, seed_words, word_table, grammar_table
 #        break
 #    s = structured_text_generator(num_words, seed, word_table, sentence_structures, word_pos_map, pos_word_map)
 #    print (s)
-summaries = ns.generate_booksummary_tokens()
+
+
+import glob
+folder_path = "C:\\Users\\Daniel Maher\\Documents\\GitHub\\CS175-Natural-Language-Generation\\Speech"
+file_names = glob.glob(folder_path + "/*.txt")
+print (file_names)
+speeches = ns.generate_local_rawtext(file_names)
+speech_tags, speech_tokens = ns.universal_tagging(ns.tokenize(speeches))
+
 n_grams = 3
-word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.build_ngram_tables(summaries, n_grams)
+word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.build_ngram_tables(speech_tags, n_grams)
 # word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct = ns.from_path_to_ngram_tables([summaries], 'local', n_grams)
 
-print ("hello")
 
-lengths = [ 4, 5, 6 ]
+lengths = [ 8, 10, 16, 22 ]
 
+initializer = ["Thank", "you"]
 string = []
-
-initializer = ["Then", "he"]
-for i in range(30):
+for i in range(15):
     if i == 0:
         include_seed = True
     else:
         include_seed = False
     num_words = random.sample(lengths,1)[0]
     s = unstructured_text_generator(num_words, initializer, word_table_unstruct, grammar_table_unstruct, word_pos_map_unstruct, pos_word_map_unstruct, include_seed)
-    string += ["\n"] + s
+    string += s
     initializer = s[-(n_grams-1):]
-
+    
 s = ""
 for w in string:
     if w == "n't" or w == "'d" or w == "'ve" or w == "'s" or w == "," or w == ";" or w == "."  or w == "!" or w == "?" or w == ":" or w == "'":
