@@ -455,9 +455,17 @@ n_grams = 3
 glove_file_path = "C:/Users/CMshadow/Desktop/glove.6B.50d.txt"
 
 initializer = ["It", "is"]
+<<<<<<< HEAD
 results = []
 for w in range(20):
     s = word2vec_generator(20, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
     results.append(s)
 for w in results:
     print(w)
+=======
+#s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
+#print (s)
+
+gensim.scripts.glove2word2vec.glove2word2vec(glove_file_path, "word2vec.txt")
+word_vectors = KeyedVectors.load_word2vec_format('word2vec.txt', binary=False)
+>>>>>>> 416ced3764fb67791bdca11791bad0eff64b6bca
