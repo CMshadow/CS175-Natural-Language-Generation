@@ -9,7 +9,6 @@ Created on Mon Feb 12 16:59:47 2018
 import gensim, random
 import ngram_sentence as ns
 from gensim.models import KeyedVectors
-import nltk
 
 
 
@@ -342,7 +341,15 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                 pos_key.append(random.sample(word_pos_map[word_key[j]], 1)[0])
             
         pos_key = tuple(pos_key)
+        
         next_pos = random.sample(grammar_table[pos_key], 1)[0]
+        
+        if len(word_table[word_key][next_pos]) == 0:
+            elligible_pos = []
+            for pos in word_table[word_key]:
+                if len(word_table[word_key][pos]) != 0:
+                    elligible_pos.append(pos)
+            next_pos = random.sample(elligible_pos, 1)[0]
         
         next_word = ""
         
@@ -354,56 +361,64 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                 
                 for x in similar_pure_words:
                     if x in pos_word_map[next_pos]:
-                        print('\t NN similarity generated')
+                        print('\t GOOD NN similarity generated')
                         print('\t', x)
                         print()
                         next_word = x
                         NOUN_check = x
+                        potential_key = random.sample(word_table[word_key][next_pos], 1)[0]
                         break;
             if NOUN_check == "" or next_word == "":                
                 if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
-                    print('\t NN word table random generated')
+                    print('\t GOOD NN word table random generated')
                     next_word = random.sample(word_table[word_key][next_pos], 1)[0]
                     NOUN_check = next_word
+                    potential_key = next_word
                 else:
-                    print('\t NN pos word map random generated')
+                    print('\t BAD NN pos word map random generated')
                     next_word = random.sample(pos_word_map[next_pos], 1)[0]
                     NOUN_check = next_word
+                    potential_key = next_word
 
             s.append(next_word)
-        elif next_pos == 'VB' or next_pos == 'VBD' or next_pos == 'VBG' or next_pos == 'VBN' or next_pos == 'VBP' or next_pos == 'VBZ':
-            if VERB_check != "":
-                similar_words = word_vectors.most_similar(positive=[VERB_check], topn=50)
-                similar_pure_words = [w[0] for w in similar_words]
-                random.shuffle(similar_pure_words)
-                
-                for x in similar_pure_words:
-                    if x in pos_word_map[next_pos]:
-                        print('\t VB similarity generated')
-                        print('\t', x)
-                        print()
-                        next_word = x
-                        VERB_check = x
-                        break;
-            if VERB_check == "" or next_word == "":                
-                if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
-                    print('\t VB word table random generated')
-                    next_word = random.sample(word_table[word_key][next_pos], 1)[0]
-                    VERB_check = next_word
-                else:
-                    print('\t VB pos word map random generated')
-                    next_word = random.sample(pos_word_map[next_pos], 1)[0]
-                    VERB_check = next_word
-
-            s.append(next_word)
+#        elif next_pos == 'VB' or next_pos == 'VBD' or next_pos == 'VBG' or next_pos == 'VBN' or next_pos == 'VBP' or next_pos == 'VBZ':
+#            if VERB_check != "":
+#                similar_words = word_vectors.most_similar(positive=[VERB_check], topn=50)
+#                similar_pure_words = [w[0] for w in similar_words]
+#                random.shuffle(similar_pure_words)
+#                
+#                for x in similar_pure_words:
+#                    if x in pos_word_map[next_pos]:
+#                        print('\t GOOD VB similarity generated')
+#                        print('\t', x)
+#                        print()
+#                        next_word = x
+#                        VERB_check = x
+#                        potential_key = random.sample(word_table[word_key][next_pos], 1)[0]
+#                        break;
+#            if VERB_check == "" or next_word == "":                
+#                if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
+#                    print('\t GOOD VB word table random generated')
+#                    next_word = random.sample(word_table[word_key][next_pos], 1)[0]
+#                    VERB_check = next_word
+#                    potential_key = next_word
+#                else:
+#                    print('\t BAD VB pos word map random generated')
+#                    next_word = random.sample(pos_word_map[next_pos], 1)[0]
+#                    VERB_check = next_word
+#                    potential_key = next_word
+#
+#            s.append(next_word)
         else:
 
             if word_key in word_table and len(word_table[word_key][next_pos]) != 0:
-                print('\t word table random generated')
+                print('\t GOOD word table random generated')
                 next_word = random.sample(word_table[word_key][next_pos], 1)[0]
+                potential_key = next_word
             else:
-                print('\t pos word map random generated')
+                print('\t BAD pos word map random generated')
                 next_word = random.sample(pos_word_map[next_pos], 1)[0]
+                potential_key = next_word
             s.append(next_word)
            
             
@@ -411,11 +426,9 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
         for j, word in enumerate(word_key):
             if j != 0:
                 next_key.append(word)
-        next_key.append(next_word)
+        next_key.append(potential_key)
         word_key = tuple(next_key)
                         
-                
-                
                 
         if i > num_words:
             if key[-1] == "." or key[-1] == ";" or key[-1] == "?" or key[-1] == "!" or key[-1] == ":":
@@ -424,8 +437,7 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
                 if (pos == "." or pos == ";" or pos == ":" or pos == "?" or pos == "!") and len(word_table[key][pos]) != 0:
                     s.append(random.sample(word_table[key][pos], 1)[0])
                     return s
-        if i == 40:
-            break
+
         i += 1
         
     return s
@@ -434,35 +446,41 @@ def word2vec_generator(num_words, seed_words, word_table, grammar_table, word_po
 
 #glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 #
-#word_table, grammar_table, word_pos_map, pos_word_map = ns.from_path_to_ngram_tables([
-#        "obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt",
-#        "./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt",
-#        "./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt","./Speech/speech12.txt",
-#        "./Speech/speech13.txt","./Speech/speech14.txt","./Speech/speech15.txt","./Speech/speech16.txt",
-#        "./Speech/speech17.txt","./Speech/speech18.txt"], 'local', 3)
+import glob
+folder_path = "/Users/cmshadow/Documents/GitHub/CS175-Natural-Language-Generation/Speech"
+file_names = glob.glob(folder_path + "/*.txt")
+#print (file_names)
+speeches = ns.generate_local_rawtext(file_names)
+speech_tags, speech_tokens = ns.universal_tagging(ns.tokenize(speeches))
+
+n_grams = 3
+word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(speech_tags, n_grams)
 #sentence_structures = ns.from_path_to_sentence_structures(["obama_speeches.txt","./Speech/speech2.txt","./Speech/speech3.txt","./Speech/speech4.txt","./Speech/speech5.txt","./Speech/speech6.txt","./Speech/speech7.txt","./Speech/speech8.txt","./Speech/speech9.txt","./Speech/speech10.txt","./Speech/speech11.txt"], 'local')
 #
 #s = word2vec_generator(9, "I", ngram_table, sentence_structures, word_pos_map, pos_word_map, glove_file_path)
 #print(s)
 
 
-summaries = ns.generate_booksummary_tokens(9999)
+#summaries = ns.generate_booksummary_tokens(9999)
 
-n_grams = 3
-word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
-<<<<<<< HEAD
-glove_file_path = "C:/Users/Daniel Maher/Desktop/glove.6B.50d.txt"
-
-initializer = ["a", "sailor"]
-s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
-print (s)
-=======
+#n_grams = 3
+#word_table, grammar_table, word_pos_map, pos_word_map = ns.build_ngram_tables(summaries, n_grams)
 glove_file_path = "/Users/cmshadow/Desktop/glove.6B/glove.6B.50d.txt"
 
-initializer = ["It", "is"]
+initializer = ["I", "am"]
 #s = word2vec_generator(7, initializer, word_table, grammar_table, word_pos_map, pos_word_map, glove_file_path)
 #print (s)
 
 gensim.scripts.glove2word2vec.glove2word2vec(glove_file_path, "word2vec.txt")
 word_vectors = KeyedVectors.load_word2vec_format('word2vec.txt', binary=False)
->>>>>>> 416ced3764fb67791bdca11791bad0eff64b6bca
+
+lengths = [ 8, 10, 16, 22 ]
+
+initializer = ["I", "am"]
+string = []
+for i in range(15):
+    num_words = random.sample(lengths,1)[0]
+    s = word2vec_generator(num_words, initializer, word_table, grammar_table, word_pos_map, pos_word_map)
+    string += s
+    initializer = s[-(n_grams-1):]
+
